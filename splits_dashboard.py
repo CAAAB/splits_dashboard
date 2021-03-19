@@ -13,9 +13,14 @@ hide_streamlit_style = """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
 
 def main():
+            
+    @st.cache(suppress_st_warning=True)
+    def get_runner(runner_name):
+        return Runner(runner_name, alpha=.05, q=.95)
+
     st.title("Splits analysis")
     runner_name = st.text_input("Enter runner name:", 'marco')
-    runner = Runner(runner_name, alpha=.05, q=.95)
+    runner = get_runner(runner_name)
     split_list = list(runner.split_map.split_code.values)
     #chosen_split = st.sidebar.radio("Split:",('Cases', 'Deaths', 'Reproduction rate', 'Positive rate'), index = 0)
     chosen_split = st.selectbox('Choose split:', split_list)#, default = [split_list[0]])
