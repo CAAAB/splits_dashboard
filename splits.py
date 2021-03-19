@@ -422,7 +422,7 @@ class Runner:
         #fig.add_trace(go.Scatter(x=res['display_name'], y=[0]*res.shape[0], line_color='Black', mode="lines"))
         fig.update_layout(showlegend=False, template="plotly_white")
 
-        if split is not None:
+        if split is not None and current_time is not None:
             res = []
             for endsplit in np.arange(split, self.split_map['split_id'].iloc[-1]+1):
                 res.append(self.predict(split, current_time, endsplit))
