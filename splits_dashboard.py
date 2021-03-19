@@ -28,11 +28,11 @@ def main():
     st.write(runner.plot_resets()) # Number of resets    split_list = list(runner.split_map.split_code.values)
     
     chosen_split = st.selectbox('Choose split:', split_list)#, default = [split_list[0]])
-    chosen_split_id = runner.split_map.loc[runner.split_map.split_code == chosen_split,"split_id"]
+    chosen_split_id = runner.split_map.loc[runner.split_map.split_code == chosen_split,"split_id"].values[0]
     st.write(chosen_split_id)
     current_time = st.text_input(f"{chosen_split} end time:")
     chosen_endsplit = st.selectbox('Choose target split:', split_list)#, default = [split_list[0]])
-    chosen_endsplit_id = runner.split_map.loc[runner.split_map.split_code == chosen_endsplit,"split_id"]
+    chosen_endsplit_id = runner.split_map.loc[runner.split_map.split_code == chosen_endsplit,"split_id"].values[0]
     st.write(chosen_endsplit_id)
     res=runner.predict(chosen_split_id,process_time(current_time), chosen_endsplit_id, display = False, verbose=False)
     st.write(res)
