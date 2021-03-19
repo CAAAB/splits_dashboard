@@ -156,8 +156,8 @@ class Runner:
 
     def get_split(self, split):
         if isinstance(split, str):
-            split = self.split_map['split_id'][self.split_map['split_name'] == split].values[0]
-        split_name = self.split_map['split_name'][self.split_map['split_id'] == split].values[0]
+            split = self.split_map.loc[self.split_map['split_name']==split, 'split_id'].values[0]
+        split_name = self.split_map.loc[self.split_map['split_id']==split, 'split_name'].values[0]
         return split, split_name
 
     def plot_split(self, split):
