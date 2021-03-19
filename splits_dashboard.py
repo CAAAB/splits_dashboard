@@ -29,15 +29,17 @@ def main():
     
     chosen_split = st.selectbox('Choose split:', split_list)#, default = [split_list[0]])
     chosen_split_id = runner.split_map.loc[runner.split_map.split_code == chosen_split,"split_id"]
+    st.write(chosen_split_id)
     current_time = st.text_input(f"{chosen_split} end time:")
     chosen_endsplit = st.selectbox('Choose target split:', split_list)#, default = [split_list[0]])
     chosen_endsplit_id = runner.split_map.loc[runner.split_map.split_code == chosen_endsplit,"split_id"]
+    st.write(chosen_endsplit_id)
     res=runner.predict(chosen_split_id,process_time(current_time), chosen_endsplit_id, display = False, verbose=False)
     st.write(res)
-    #runner.plot_splits_over_time('M', q=.05)
-    #runner.plot_resets()
+    st.write(runner.plot_splits_over_time('M', q=.05))
+    st.write(runner.plot_resets())
 
-    sa = runner.split_analysis('average_run')
+    st.write(runner.split_analysis('average_run'))
     #split= "Palace Done"
     #current_time = process_time("2:43:47")
     #res = runner.predict(split, current_time, endsplit=None,display=False, verbose=True)
