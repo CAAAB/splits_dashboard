@@ -17,37 +17,37 @@ def print_prediction(res):
     return f'{100*(1-alpha):.0f}% chance of ending {res["endsplit_name"]} between {nice_time(res["hpd_low"])} and {nice_time(res["hpd_high"])}'
 
 def plot_splits_over_time(runner, freq, q=.1):
-        """e.g. freq can be M or W-MON"""
-        def low(x):
-            return np.quantile(x, q)
-        def high(x):
-            return np.quantile(x, 1-q)
-        df = runner.splits.loc[runner.splits.split_duration >0,:]
-        df['date'] = pd.to_datetime(df['started_at'])
-        dfd = df.groupby(['split_id', pd.Grouper(key='date', freq=freq)])['split_duration'].agg(mus=np.median).reset_index().sort_values('date')
-        dfd['sigmasq'] = df.groupby(['split_id', pd.Grouper(key='date', freq=freq)])['split_duration'].agg(sigmasq=np.std).reset_index()['sigmasq']#.sort_values('date')
-        dfd['mus_low'] = df.groupby(['split_id', pd.Grouper(key='date', freq=freq)])['split_duration'].agg(mus_low=low).reset_index()['mus_low']
-        dfd['mus_high'] = df.groupby(['split_id', pd.Grouper(key='date', freq=freq)])['split_duration'].agg(mus_high=high).reset_index()['mus_high']
+    """e.g. freq can be M or W-MON"""
+    def low(x):
+        return np.quantile(x, q)
+    def high(x):
+        return np.quantile(x, 1-q)
+    df = runner.splits.loc[runner.splits.split_duration >0,:]
+    df['date'] = pd.to_datetime(df['started_at'])
+    dfd = df.groupby(['split_id', pd.Grouper(key='date', freq=freq)])['split_duration'].agg(mus=np.median).reset_index().sort_values('date')
+    dfd['sigmasq'] = df.groupby(['split_id', pd.Grouper(key='date', freq=freq)])['split_duration'].agg(sigmasq=np.std).reset_index()['sigmasq']#.sort_values('date')
+    dfd['mus_low'] = df.groupby(['split_id', pd.Grouper(key='date', freq=freq)])['split_duration'].agg(mus_low=low).reset_index()['mus_low']
+    dfd['mus_high'] = df.groupby(['split_id', pd.Grouper(key='date', freq=freq)])['split_duration'].agg(mus_high=high).reset_index()['mus_high']
 
+    time_scale = 60
+    fig = go.Figure()
+    for split_id in np.sort(dfd.split_id.unique()):
+        dfds = dfd[dfd.split_id == split_id]
+        split_col = next(pccols)
+        name = runner.get_split(split_id)
+        name = f'{name[0]} - {name[1]}'
+        fig.add_trace(go.Scatter(x=dfds['date'], y=dfds['mus_low']/time_scale, name=name, legendgroup=name,
+                                fill=None, showlegend=False, line_color=split_col,
+                                mode='lines'))
+        fig.add_trace(go.Scatter(x=dfds['date'], y=dfds['mus_high']/time_scale, name = name, legendgroup=name,
+                                fill="tonexty", mode="lines", line_color=split_col))
+        dfm = df.loc[df.split_id == split_id,:]
         time_scale = 60
-        fig = go.Figure()
-        for split_id in np.sort(dfd.split_id.unique()):
-            dfds = dfd[dfd.split_id == split_id]
-            split_col = next(pccols)
-            name = runner.get_split(split_id)
-            name = f'{name[0]} - {name[1]}'
-            fig.add_trace(go.Scatter(x=dfds['date'], y=dfds['mus_low']/time_scale, name=name, legendgroup=name,
-                                    fill=None, showlegend=False, line_color=split_col,
-                                    mode='lines'))
-            fig.add_trace(go.Scatter(x=dfds['date'], y=dfds['mus_high']/time_scale, name = name, legendgroup=name,
-                                    fill="tonexty", mode="lines", line_color=split_col))
-            dfm = df.loc[df.split_id == split_id,:]
-            time_scale = 60
-            fig.add_trace(go.Scatter(x=dfm['started_at'], y=dfm['split_duration']/time_scale, mode='markers', marker_size=3, marker_color=split_col, legendgroup=name, showlegend=False))
-            #fig.add_trace(go.Scatter(x=dfds['date'], y=dfds['mus'], name = name, legendgroup=name,mode="lines"))
-        fig.update_layout(template="plotly_white", yaxis_title="Split duration (min)")
-        fig.show()
-        return fig
+        fig.add_trace(go.Scatter(x=dfm['started_at'], y=dfm['split_duration']/time_scale, mode='markers', marker_size=3, marker_color=split_col, legendgroup=name, showlegend=False))
+        #fig.add_trace(go.Scatter(x=dfds['date'], y=dfds['mus'], name = name, legendgroup=name,mode="lines"))
+    fig.update_layout(template="plotly_white", yaxis_title="Split duration (min)")
+    fig.show()
+    return fig
 
 
 def main():
