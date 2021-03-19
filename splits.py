@@ -203,6 +203,7 @@ class Runner:
             #legend={"orientation":'h'}
         )
         fig.show()
+        return fig
 
 
     def predict(self, split, time, endsplit=None, display=False, verbose = False):
@@ -334,7 +335,7 @@ class Runner:
             mode='lines', line_color='Gold'))
         fig.show()
 
-        return run_split_analysis
+        return fig
 
     def boxplot(self, points="outliers"):
         """Points can be all, outliers, suspectedoutliers"""
@@ -361,6 +362,7 @@ class Runner:
             title_text="Split times distribution",
             violingap=0, violingroupgap=0, violinmode='overlay')
         fig.show()
+        return fig
 
     def plot_splits_over_time(self, freq, q=.1):
         """e.g. freq can be M or W-MON"""
