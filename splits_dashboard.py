@@ -29,12 +29,16 @@ def main():
     fig_violin = runner.boxplot(points = "outliers")
     st.write(fig_violin)
     
-    chosen_split = st.selectbox('Choose split:', split_list, index=0)
-    chosen_split_id = runner.split_map.loc[runner.split_map.split_code == chosen_split,"split_id"].values[0]
-    #current_time = st.time_input("Split time")
-    current_time = st.text_input(f"{chosen_split} end time:")
-    chosen_endsplit = st.selectbox('Choose target split:', split_list, index=len(split_list)-1)#, default = [split_list[0]])
-    chosen_endsplit_id = runner.split_map.loc[runner.split_map.split_code == chosen_endsplit,"split_id"].values[0]
+    # Last split
+    chosen_split_code = st.selectbox('Last split', split_list, index=0)
+    chosen_split_id = runner.split_map.loc[runner.split_map.split_code == chosen_split_code,"split_id"].values[0]
+    chosen_split_name = runner.split_map.loc[runner.split_map.split_code == chosen_split_code,"split_name"].values[0]
+
+    # Target split
+    current_time = st.text_input(f"{chosen_split_name} end time")
+    chosen_endsplit_code = st.selectbox('Target split', split_list, index=len(split_list)-1)#, default = [split_list[0]])
+    chosen_endsplit_id = runner.split_map.loc[runner.split_map.split_code == chosen_endsplit_code,"split_id"].values[0]
+    chosen_endsplit_name = runner.split_map.loc[runner.split_map.split_code == chosen_endsplit_code,"split_name"].values[0]
     res=runner.predict(chosen_split_id,process_time(current_time), chosen_endsplit_id, display = False, verbose=False)
     st.write(print_prediction(res))
     st.write(runner.plot_splits_over_time('M', q=.05)) # Split improvement over time
