@@ -2,7 +2,7 @@ from splits import *
 
 import streamlit as st
 import streamlit.components.v1 as components
-PAGE_CONFIG = {"page_title":"Covid-19 dashboard","page_icon":":mask:","layout":"wide"}
+PAGE_CONFIG = {"page_title":"Split dashboard","page_icon":":bar_chart:","layout":"wide"}
 st.set_page_config(**PAGE_CONFIG)
 hide_streamlit_style = """
             <style>
@@ -18,7 +18,7 @@ def main():
     runner = Runner(runner_name, alpha=.05, q=.95)
     split_list = list(runner.split_map.split_code.values)
     #chosen_split = st.sidebar.radio("Split:",('Cases', 'Deaths', 'Reproduction rate', 'Positive rate'), index = 0)
-    chosen_split = st.selectbox('Choose split:', split_list, default = [split_list[0]])
+    chosen_split = st.selectbox('Choose split:', split_list)#, default = [split_list[0]])
     
 
     fig_violin = runner.boxplot(points = "outliers")
