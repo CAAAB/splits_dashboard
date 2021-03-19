@@ -63,9 +63,13 @@ def main():
     chosen_split_id = runner.split_map.loc[runner.split_map.split_code == chosen_split_code,"split_id"].values[0]
     chosen_split_name = runner.split_map.loc[runner.split_map.split_code == chosen_split_code,"split_name"].values[0]
 
-    # Target split
+    # Last split time
     current_time = st.text_input(f"{chosen_split_name} end time", "00:00:00")
-    pct = process_time(current_time) if current_time != "" else ""
+    if current_time != "":
+        st.write(current_time)
+        pct = process_time(current_time)
+    
+    # Target split
     chosen_endsplit_code = st.selectbox('Target split', split_list, index=len(split_list)-1)
     chosen_endsplit_id = runner.split_map.loc[runner.split_map.split_code == chosen_endsplit_code,"split_id"].values[0]
     chosen_endsplit_name = runner.split_map.loc[runner.split_map.split_code == chosen_endsplit_code,"split_name"].values[0]
