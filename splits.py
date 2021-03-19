@@ -95,8 +95,7 @@ class Runner:
             for h in row['histories']:
                 histories.append({"id":row['id'], "split_id":row['segment_number']+1, "split_name":row['name'], #trying to add 0th split, added 1 to all splits
                                     'attempt_number':h['attempt_number'], 'split_duration':h['realtime_duration_ms']/1000})
-                histories.append({"id":row['id'], "split_id":[0], "split_name":["Run start"], #trying to add 0th split, added 1 to all splits
-                                    'attempt_number':h['attempt_number'], 'split_duration':[0]})
+                #histories.append({"id":row['id'], "split_id":[0], "split_name":["Run start"], 'attempt_number':h['attempt_number'], 'split_duration':[0]})
         histories = pd.DataFrame(histories)
         #histories.append(pd.DataFrame({'id':[0], "split_id":[0], "split_name":['Run start'], 'attempt_number':[0], 'split_duration':[0]})) # NEW trying to add 0th split
         attempts = pd.DataFrame(res_splits.json()['run']['histories'])
