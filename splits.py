@@ -41,7 +41,7 @@ def process_time(split_time):
         split_time = split_time[0]*3600 + split_time[1]*60
     return split_time
 
-class runner:
+class Runner:
     def __init__(self, user, alpha=.05, q=1):
         self.user = user
         self.alpha = alpha
