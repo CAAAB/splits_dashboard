@@ -47,7 +47,7 @@ class Runner:
         self.alpha = alpha
         self.q = q
         self.splits = self.get_splits()
-        self.split_map = self.splits[['split_id', 'split_name']].groupby(['split_id', 'split_name']).count().reset_index()
+        self.split_map = self.make_split_map()
         self.speedrun_category = {'game_code':self.game_id, 'game_category':self.game_category_id, "user":self.user}
         self.clean_s = self.clean_splits()
         #self.tidy_s = self.tidy_splits()
@@ -55,6 +55,11 @@ class Runner:
         self.wr_time = self.get_wr()
         self.target = self.pb_time #to change
         self.targets = {'target':self.target, 'PB':self.pb_time, 'WR':self.wr_time}
+        
+    def make_split_map(self):
+        df = self.splits[['split_id', 'split_name']].groupby(['split_id', 'split_name']).count().reset_index()
+        df['split_code'] = [f'{row.split_id} - {row.split_name}' for _, row in df.iterrows()]
+        return df.sort_values('split_id')
 
     def get_pb(self):
         api_pb = f'https://www.speedrun.com/api/v1/users/{self.speedrun_category["user"]}/personal-bests'
