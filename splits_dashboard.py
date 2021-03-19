@@ -47,6 +47,7 @@ def plot_splits_over_time(runner, freq, q=.1):
             #fig.add_trace(go.Scatter(x=dfds['date'], y=dfds['mus'], name = name, legendgroup=name,mode="lines"))
         fig.update_layout(template="plotly_white", yaxis_title="Split duration (min)")
         fig.show()
+        return fig
 
 
 def main():
