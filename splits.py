@@ -391,6 +391,7 @@ class Runner:
                                     fill="tonexty", mode="lines", line_color=split_col))
             #fig.add_trace(go.Scatter(x=dfds['date'], y=dfds['mus'], name = name, legendgroup=name,mode="lines"))
         fig.show()
+        return fig
 
     def plot_resets(self):
         df = self.splits_filtered[['split_id', 'split_name', 'split_duration']]
@@ -405,3 +406,4 @@ class Runner:
         fig.add_trace(go.Scatter(x=resets['display_name'], y=resets['p_finish_run'], name="p_finish_run"))
         fig.add_trace(go.Scatter(x=resets['display_name'], y=resets['p_continue'], name="p_contiune"))
         fig.show()
+        return fig
