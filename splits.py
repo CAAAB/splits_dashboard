@@ -407,3 +407,15 @@ class Runner:
         fig.add_trace(go.Scatter(x=resets['display_name'], y=resets['p_continue'], name="p_contiune"))
         fig.show()
         return fig
+    
+    def plot_future_splits(self, split, current_time):
+        res = []
+        for endsplit in np.arange(split+1, self.split_map['split_id'].iloc[-1]+1):
+            res.append(self.predict(split, current_time, endsplit))
+        res = pd.DataFrame(res)
+        res['display_name'] = [f'{row.endsplit_id} - {row.endsplit_name}' for _,row in res.iterrows()]
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_low'], line_color='Black'))
+        fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_high'], line_color='Black', fill='tonexty'))
+        fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_median'], line_color='Black'))
+        return fig
