@@ -14,7 +14,7 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 alpha = .05
 def print_prediction(res):
-    return f'{1-alpha}% chance of ending {res.endsplit_name} between {nice_time(res.hpd_low)} and {nice_time(res.hpd_high)}'
+    return f'{1-alpha}% chance of ending {res["endsplit_name"]} between {nice_time(res["hpd_low"])} and {nice_time(res["hpd_high"])}'
 
 def main():
             
