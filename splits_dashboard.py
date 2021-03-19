@@ -91,7 +91,7 @@ def main():
     st.write(fig_violin)
     st.write(plot_splits_over_time(runner, 'M', q=.05)) # Split improvement over time # class method deprecated
     #st.write(runner.plot_resets()) # Number of resets
-    st.write(runner.split_analysis('average_run')) # Average run
+    #st.write(runner.split_analysis('average_run')) # Average run
     #split= "Palace Done"
     #current_time = process_time("2:43:47")
     #res = runner.predict(split, current_time, endsplit=None,display=False, verbose=True)
