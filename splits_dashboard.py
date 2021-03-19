@@ -50,11 +50,13 @@ def main():
         return Runner(runner_name, alpha=alpha, q=.95)
 
     st.title("Splits analysis")
-    runner_name = st.sidebar.text_input("Enter runner name:", 'marco')
-    runner = get_runner(runner_name)
+    runner_name = st.sidebar.text_input("Runner name", 'marco')
+    st.sidebar.write("Runner needs to have uploaded splits to splits.io")
+    try:
+        runner = get_runner(runner_name)
+    except:
+        st.error("Could not get runner's splits")
     split_list = list(runner.split_map.split_code)
-    fig_violin = runner.boxplot(points = "outliers")
-    st.write(fig_violin)
     
     # Last split
     chosen_split_code = st.selectbox('Last split', split_list, index=0)
@@ -68,9 +70,15 @@ def main():
     chosen_endsplit_id = runner.split_map.loc[runner.split_map.split_code == chosen_endsplit_code,"split_id"].values[0]
     chosen_endsplit_name = runner.split_map.loc[runner.split_map.split_code == chosen_endsplit_code,"split_name"].values[0]
 
-    st.write(runner.plot_future_splits(split=chosen_split_id, current_time=pct))
+    # Predict next splits
     res=runner.predict(chosen_split_id, pct, chosen_endsplit_id, display = False, verbose=False)
     st.write(print_prediction(res))
+    st.write(runner.plot_future_splits(split=chosen_split_id, current_time=pct))
+
+
+    # Past splits stats
+    fig_violin = runner.boxplot(points = "outliers")
+    st.write(fig_violin)
     st.write(runner.plot_splits_over_time('M', q=.05)) # Split improvement over time
     st.write(runner.plot_resets()) # Number of resets
     st.write(runner.split_analysis('average_run')) # Average run
