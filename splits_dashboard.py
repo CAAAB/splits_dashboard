@@ -31,7 +31,7 @@ def main():
     
     chosen_split = st.selectbox('Choose split:', split_list, index=0)
     chosen_split_id = runner.split_map.loc[runner.split_map.split_code == chosen_split,"split_id"].values[0]
-    current_time = st.time_input("Split time")
+    #current_time = st.time_input("Split time")
     current_time = st.text_input(f"{chosen_split} end time:")
     chosen_endsplit = st.selectbox('Choose target split:', split_list, index=len(split_list)-1)#, default = [split_list[0]])
     chosen_endsplit_id = runner.split_map.loc[runner.split_map.split_code == chosen_endsplit,"split_id"].values[0]
