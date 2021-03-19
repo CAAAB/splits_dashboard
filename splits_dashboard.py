@@ -68,7 +68,7 @@ def main():
     chosen_endsplit_id = runner.split_map.loc[runner.split_map.split_code == chosen_endsplit_code,"split_id"].values[0]
     chosen_endsplit_name = runner.split_map.loc[runner.split_map.split_code == chosen_endsplit_code,"split_name"].values[0]
 
-    st.write(plot_future_splits(runner, split=chosen_split_id, current_time=pct))
+    st.write(runner.plot_future_splits(split=chosen_split_id, current_time=pct))
     res=runner.predict(chosen_split_id, pct, chosen_endsplit_id, display = False, verbose=False)
     st.write(print_prediction(res))
     st.write(runner.plot_splits_over_time('M', q=.05)) # Split improvement over time
