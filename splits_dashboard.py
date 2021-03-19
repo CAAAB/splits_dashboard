@@ -39,6 +39,8 @@ def main():
     chosen_endsplit_code = st.selectbox('Target split', split_list, index=len(split_list)-1)#, default = [split_list[0]])
     chosen_endsplit_id = runner.split_map.loc[runner.split_map.split_code == chosen_endsplit_code,"split_id"].values[0]
     chosen_endsplit_name = runner.split_map.loc[runner.split_map.split_code == chosen_endsplit_code,"split_name"].values[0]
+
+    st.write(runner.plot_future_splits(split=chosen_split_id, process_time(current_time))
     res=runner.predict(chosen_split_id,process_time(current_time), chosen_endsplit_id, display = False, verbose=False)
     st.write(print_prediction(res))
     st.write(runner.plot_splits_over_time('M', q=.05)) # Split improvement over time
