@@ -21,6 +21,7 @@ def main():
     st.title("Splits analysis")
     runner_name = st.sidebar.text_input("Enter runner name:", 'marco')
     runner = get_runner(runner_name)
+    split_list = list(runner.split_map.split_code)
     fig_violin = runner.boxplot(points = "outliers")
     st.write(fig_violin)
     st.write(runner.plot_splits_over_time('W', q=.05)) # Split improvement over time
