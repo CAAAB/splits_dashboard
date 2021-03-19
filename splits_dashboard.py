@@ -18,7 +18,7 @@ def main():
     runner = Runner(runner_name, alpha=.05, q=.95)
     split_list = list(runner.split_map.split_code.values)
     #chosen_split = st.sidebar.radio("Split:",('Cases', 'Deaths', 'Reproduction rate', 'Positive rate'), index = 0)
-    chosen_split = st.select('Choose split:', split_list, default = [split_list[0]])
+    chosen_split = st.selectbox('Choose split:', split_list, default = [split_list[0]])
     
 
     fig_violin = runner.boxplot(points = "outliers")
