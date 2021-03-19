@@ -36,7 +36,7 @@ def main():
 
     # Target split
     current_time = st.text_input(f"{chosen_split_name} end time")
-    pct = process_time(current_time) is current_time is not None else None
+    pct = process_time(current_time) if current_time is not None else None
     chosen_endsplit_code = st.selectbox('Target split', split_list, index=len(split_list)-1)
     chosen_endsplit_id = runner.split_map.loc[runner.split_map.split_code == chosen_endsplit_code,"split_id"].values[0]
     chosen_endsplit_name = runner.split_map.loc[runner.split_map.split_code == chosen_endsplit_code,"split_name"].values[0]
