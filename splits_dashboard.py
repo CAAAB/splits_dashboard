@@ -19,20 +19,24 @@ def main():
         return Runner(runner_name, alpha=.05, q=.95)
 
     st.title("Splits analysis")
-    runner_name = st.text_input("Enter runner name:", 'marco')
+    runner_name = st.sidebar.text_input("Enter runner name:", 'marco')
     runner = get_runner(runner_name)
-    split_list = list(runner.split_map.split_code.values)
-    #chosen_split = st.sidebar.radio("Split:",('Cases', 'Deaths', 'Reproduction rate', 'Positive rate'), index = 0)
-    chosen_split = st.selectbox('Choose split:', split_list)#, default = [split_list[0]])
-    
-
     fig_violin = runner.boxplot(points = "outliers")
     st.write(fig_violin)
+    st.write(runner.plot_splits_over_time('W', q=.05)) # Split improvement over time
+    st.write(runner.plot_resets()) # Number of resets    split_list = list(runner.split_map.split_code.values)
+    
+    chosen_split = st.selectbox('Choose split:', split_list)#, default = [split_list[0]])
+    chosen_split_id = runner.split_map.loc[runner.split_map.split_code == chosen_split,"split_id"]
+    current_time = st.text_input(f"{chosen_split} end time:")
+    chosen_endsplit = st.selectbox('Choose target split:', split_list)#, default = [split_list[0]])
+    chosen_endsplit_id = runner.split_map.loc[runner.split_map.split_code == chosen_endsplit,"split_id"]
+    res=runner.predict(chosen_split_id,process_time(current_time), chosen_endsplit_id, display = False, verbose=False)
+    st.write(res)
     #runner.plot_splits_over_time('M', q=.05)
     #runner.plot_resets()
 
     sa = runner.split_analysis('average_run')
-
     #split= "Palace Done"
     #current_time = process_time("2:43:47")
     #res = runner.predict(split, current_time, endsplit=None,display=False, verbose=True)
