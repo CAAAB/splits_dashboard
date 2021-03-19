@@ -12,14 +12,15 @@ hide_streamlit_style = """
             """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
 
+alpha = .05
 def print_prediction(res):
-    return f'{1-res.alpha}% chance of ending {res.endsplit_name} between {nice_time(res.hpd_low)} and {nice_time(res.hpd_high)}'
+    return f'{1-alpha}% chance of ending {res.endsplit_name} between {nice_time(res.hpd_low)} and {nice_time(res.hpd_high)}'
 
 def main():
             
     @st.cache(suppress_st_warning=True)
     def get_runner(runner_name):
-        return Runner(runner_name, alpha=.05, q=.95)
+        return Runner(runner_name, alpha=alpha, q=.95)
 
     st.title("Splits analysis")
     runner_name = st.sidebar.text_input("Enter runner name:", 'marco')
