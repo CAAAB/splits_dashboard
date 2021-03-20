@@ -16,6 +16,9 @@ alpha = .05
 def print_prediction(res):
     return f'{100*(1-alpha):.0f}% chance of ending {res["endsplit_name"]} between {nice_time(res["hpd_low"])} and {nice_time(res["hpd_high"])}'
 
+def proba_pb(runner, split_id, current_time):
+    return runner.predict(split_id, process_time(current_time))['p_pb']
+
 def plot_splits_over_time(runner, freq, q=.1):
     """e.g. freq can be M or W-MON"""
     def low(x):
@@ -74,7 +77,7 @@ def main():
     current_time = st.text_input(f"{chosen_split_name} end time", "00:00:00")
     if current_time != "":
         pct = process_time(current_time)
-    
+    st.write(f"{predict_pb(runner, chosen_split_id, pct):.0f} chance of PB ({runner.pb_time})")
     # Target split
     chosen_endsplit_code = st.selectbox('Target split', split_list, index=len(split_list)-1)
     chosen_endsplit_id = runner.split_map.loc[runner.split_map.split_code == chosen_endsplit_code,"split_id"].values[0]
