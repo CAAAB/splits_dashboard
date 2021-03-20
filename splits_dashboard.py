@@ -67,8 +67,8 @@ def plot_expected_run(runner, split="", current_time=""):
     res['text'] = [f'{row.display_name}<br>High: {nice_time(row.hpd_high)}<br>Median: {nice_time(row.hpd_median)}<br>Low: {nice_time(row.hpd_low)}' for _,row in res.iterrows()]
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_low']-res['hpd_median'], line_color='Blue', text=res['text'], hoverinfo='text', mode='lines'))
-    fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_high']-res['hpd_median'], line_color='Blue', text=res['text'], hoverinfo='text', fill='tonexty', mode='lines'))
+    fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_low'], line_color='Blue', text=res['text'], hoverinfo='text', mode='lines'))
+    fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_high'], line_color='Blue', text=res['text'], hoverinfo='text', fill='tonexty', mode='lines'))
     #fig.add_trace(go.Scatter(x=res['display_name'], y=[0]*res.shape[0], line_color='Black', mode="lines"))
 
     if split != "" and current_time != "":
