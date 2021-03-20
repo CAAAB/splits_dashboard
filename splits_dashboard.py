@@ -162,6 +162,7 @@ def main():
     res=runner.predict(chosen_split_id, pct, chosen_endsplit_id, display = False, verbose=False)
     st.write(print_prediction(res))
     #st.write(runner.plot_future_splits(split=chosen_split_id, current_time=pct))
+    st.markdown('The below graph shows the run time uncertainty at the start of the run (in blue) and at the current split (in yellow) for each of the remaining splits. Hover above on the lines to get a credible interval for the end split time')
     st.write(plot_expected_run(runner=runner, split=chosen_split_id, current_time=pct))
 
     
