@@ -19,6 +19,7 @@ def print_prediction(res):
 def proba_pb(runner, split_id, current_time):
     return runner.predict(split_id, current_time)['p_pb']
 
+@st.cache()
 def plot_splits_over_time(runner, freq, split, bands=False, q=.1):
     """e.g. freq can be M or W-MON"""
     def low(x):
@@ -58,7 +59,9 @@ def plot_splits_over_time(runner, freq, split, bands=False, q=.1):
     fig.show()
     return fig
 
+@st.cache()
 def plot_expected_run(runner, split="", current_time=""):
+    time_scale = 60*60
     res = []
     for endsplit in np.arange(0, runner.split_map['split_id'].iloc[-1]+1):
         res.append(runner.predict(0, 0, endsplit))
@@ -67,8 +70,8 @@ def plot_expected_run(runner, split="", current_time=""):
     res['text'] = [f'{row.display_name}<br>High: {nice_time(row.hpd_high)}<br>Median: {nice_time(row.hpd_median)}<br>Low: {nice_time(row.hpd_low)}' for _,row in res.iterrows()]
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_low'], line_color='Blue', text=res['text'], hoverinfo='text', mode='lines'))
-    fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_high'], line_color='Blue', text=res['text'], hoverinfo='text', fill='tonexty', mode='lines'))
+    fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_low']/time_scale, line_color='Blue', text=res['text'], hoverinfo='text', mode='lines'))
+    fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_high']/time_scale, line_color='Blue', text=res['text'], hoverinfo='text', fill='tonexty', mode='lines'))
     #fig.add_trace(go.Scatter(x=res['display_name'], y=[0]*res.shape[0], line_color='Black', mode="lines"))
 
     if split != "" and current_time != "":
@@ -79,10 +82,10 @@ def plot_expected_run(runner, split="", current_time=""):
         res['display_name'] = [f'{row.endsplit_id} - {row.endsplit_name}' for _,row in res.iterrows()]
         res['text'] = [f'{row.display_name}<br>High: {nice_time(row.hpd_high)}<br>Median: {nice_time(row.hpd_median)}<br>Low: {nice_time(row.hpd_low)}' for _,row in res.iterrows()]
 
-        fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_low'], line_color='Gold', text=res['text'], hoverinfo='text', mode='lines'))
-        fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_high'], line_color='Gold', text=res['text'], hoverinfo='text', fill='tonexty', mode='lines'))
+        fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_low']/time_scale, line_color='Gold', text=res['text'], hoverinfo='text', mode='lines'))
+        fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_high']/time_scale, line_color='Gold', text=res['text'], hoverinfo='text', fill='tonexty', mode='lines'))
         #fig.add_trace(go.Scatter(x=res['display_name'], y=[0]*res.shape[0], line_color='Black', mode="lines"))
-    fig.update_layout(showlegend=False, template="plotly_white", yaxis_title="Likely seconds range")
+    fig.update_layout(showlegend=False, template="plotly_white", yaxis_title="Expected time (s)")
     return fig
 
 def main():
@@ -91,8 +94,7 @@ def main():
     def get_runner(runner_name):
         return Runner(runner_name, alpha=alpha, q=.95)
 
-    st.title("Splits analysis")
-    st.markdown("Enter the run duration until the latest split to get an estimated time of completion for the following segments")
+    # Sidebar
     runner_name = st.sidebar.text_input("Runner name", 'marco')
     st.sidebar.write("Runner needs to have uploaded splits to splits.io")
     try:
@@ -103,6 +105,9 @@ def main():
     st.sidebar.write(runner.game_category_name)
     st.sidebar.markdown(f"![Game cover]({get_game_cover(runner.game_id)})")
     split_list = list(runner.split_map.split_code)
+    
+    st.title(f"{runner_name}'s splits")
+    st.markdown("Enter the run duration until the latest split to get an estimated time of completion for the following segments")
     
     # Last split
     chosen_split_code = st.selectbox('Last split', split_list, index=0)
