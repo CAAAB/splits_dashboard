@@ -54,7 +54,7 @@ def plot_splits_over_time(runner, freq, split, bands=False, q=.1):
             fig.add_trace(go.Scatter(x=dfds['date'], y=dfds['mus_high']/time_scale, name = name, legendgroup=name,
                                     fill="tonexty", mode="lines", line_color=split_col, showlegend=bands))
         #fig.add_trace(go.Scatter(x=dfds['date'], y=dfds['mus'], name = name, legendgroup=name,mode="lines"))
-    fig.update_layout(template="plotly_white", yaxis_title="Split duration (min)", width=900, height=600)
+    fig.update_layout(template="plotly_white", yaxis_title="Split duration (min)", title=f"{name}")
     fig.update_xaxes(rangeslider_visible=False)
     fig.show()
     return fig
@@ -163,9 +163,13 @@ def main():
     # Past splits stats
     st.write(plot_violin(runner, points = "outliers"))
     
+    split_code = st.selectbox('Last split', split_list, index=0)
+    split_id = runner.split_map.loc[runner.split_map.split_code == split_code,"split_id"].values[0]
+    split_name = runner.split_map.loc[runner.split_map.split_code == split_code,"split_name"].values[0]
+
     stbands = st.radio("Show bands", ["Yes", "No"], index=1)
     bands = True if stbands == "Yes" else False      
-    st.write(plot_splits_over_time(runner, 'M', split=chosen_split_id, bands=bands, q=.05)) # Split improvement over time # class method deprecated
+    st.write(plot_splits_over_time(runner, 'M', split=split_id, bands=bands, q=.05)) # Split improvement over time # class method deprecated
     #st.write(runner.plot_resets()) # Number of resets
     #st.write(runner.split_analysis('average_run')) # Average run
     #split= "Palace Done"
