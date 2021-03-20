@@ -126,7 +126,6 @@ def plot_violin(runner, points="outliers"):
 def plot_pb_vs_best(runner, diff=False):
     df = runner.split_map
     df['text'] = ["Shortest: "+nice_time(x) for x in df.split_shortest_duration]
-    diff = True
     fig = go.Figure()
     if diff:
         ytitle = "PB - Best ever (s) "
