@@ -47,8 +47,8 @@ def plot_splits_over_time(runner, freq, split, bands=False, q=.1):
     for split_id in np.unique(df.split_id):
         dfm = df.loc[df.split_id == split_id,:]
         split_col = next(pccols)
-        name = runner.get_split(split_id)
-        name = f'{name[0]} - {name[1]}'
+        split_name = runner.get_split(split_id)
+        name = f'{split_name[0]} - {split_name[1]}'
         sl1 = not bands
         fig.add_trace(go.Scatter(x=dfm['started_at'], y=dfm['split_duration']/time_scale, text=dfm['text'], hoverinfo='text', mode='markers', marker_size=3, name=name,marker_color=split_col, legendgroup=name, showlegend=legend1))
         if bands:
@@ -59,7 +59,7 @@ def plot_splits_over_time(runner, freq, split, bands=False, q=.1):
             fig.add_trace(go.Scatter(x=dfds['date'], y=dfds['mus_high']/time_scale, name = name, legendgroup=name,
                                     fill="tonexty", mode="lines", line_color=split_col, showlegend=legend2))
         #fig.add_trace(go.Scatter(x=dfds['date'], y=dfds['mus'], name = name, legendgroup=name,mode="lines"))
-    fig.update_layout(template="plotly_white", yaxis_title="Split duration (min)", title=f"{name}")
+    fig.update_layout(template="plotly_white", yaxis_title="Split duration (min)", title=f"Time improvement on {split_name[1]}:")
     fig.update_xaxes(rangeslider_visible=False)
     fig.show()
     return fig
@@ -163,7 +163,7 @@ def main():
     res=runner.predict(chosen_split_id, pct, chosen_endsplit_id, display = False, verbose=False)
     st.write(print_prediction(res))
     #st.write(runner.plot_future_splits(split=chosen_split_id, current_time=pct))
-    st.markdown('The below graph shows the run time uncertainty at the start of the run (in blue) and at the current split (in yellow) for each of the remaining splits. Hover above on the lines to get a credible interval for the end split time')
+    st.markdown('The below graph shows the run time uncertainty at the start of the run (in blue) and at the current split (in yellow) for each of the remaining splits. Hover above the lines to get a credible interval for the end split time')
     st.write(plot_expected_run(runner=runner, split=chosen_split_id, current_time=pct))
 
     
