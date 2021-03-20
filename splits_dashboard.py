@@ -31,6 +31,10 @@ def plot_splits_over_time(runner, freq, split, bands=False, q=.1):
         df = df.loc[df.split_id == split,:]
     df['date'] = pd.to_datetime(df['started_at'])
     df['text'] = [f'{row.split_code}<br>{row.date}<br>{nice_time(row.split_duration)}' for _,row in df.iterrows()]
+    legend1 = not bands
+    legend2 = bands
+    legend1 = False
+    legend2 = False
     
     if bands:
         dfd = df.groupby(['split_id', pd.Grouper(key='date', freq=freq)])['split_duration'].agg(mus=np.median).reset_index().sort_values('date')
@@ -46,14 +50,14 @@ def plot_splits_over_time(runner, freq, split, bands=False, q=.1):
         name = runner.get_split(split_id)
         name = f'{name[0]} - {name[1]}'
         sl1 = not bands
-        fig.add_trace(go.Scatter(x=dfm['started_at'], y=dfm['split_duration']/time_scale, text=dfm['text'], hoverinfo='text', mode='markers', marker_size=3, name=name,marker_color=split_col, legendgroup=name, showlegend=not bands))
+        fig.add_trace(go.Scatter(x=dfm['started_at'], y=dfm['split_duration']/time_scale, text=dfm['text'], hoverinfo='text', mode='markers', marker_size=3, name=name,marker_color=split_col, legendgroup=name, showlegend=legend1))
         if bands:
             dfds = dfd[dfd.split_id == split_id]
             fig.add_trace(go.Scatter(x=dfds['date'], y=dfds['mus_low']/time_scale, name=name, legendgroup=name,
                                     fill=None, showlegend=False, line_color=split_col,
                                     mode='lines'))
             fig.add_trace(go.Scatter(x=dfds['date'], y=dfds['mus_high']/time_scale, name = name, legendgroup=name,
-                                    fill="tonexty", mode="lines", line_color=split_col, showlegend=bands))
+                                    fill="tonexty", mode="lines", line_color=split_col, showlegend=legend2))
         #fig.add_trace(go.Scatter(x=dfds['date'], y=dfds['mus'], name = name, legendgroup=name,mode="lines"))
     fig.update_layout(template="plotly_white", yaxis_title="Split duration (min)", title=f"{name}")
     fig.update_xaxes(rangeslider_visible=False)
