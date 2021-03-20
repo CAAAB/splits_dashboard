@@ -42,7 +42,7 @@ def plot_splits_over_time(runner, freq, bands=False, q=.1):
         name = runner.get_split(split_id)
         name = f'{name[0]} - {name[1]}'
         sl1 = not bands
-        fig.add_trace(go.Scatter(x=dfm['started_at'], y=dfm['split_duration']/time_scale, mode='markers', marker_size=3, marker_color=split_col, legendgroup=name, showlegend=not bands))
+        fig.add_trace(go.Scatter(x=dfm['started_at'], y=dfm['split_duration']/time_scale, mode='markers', marker_size=3, name=name,marker_color=split_col, legendgroup=name, showlegend=not bands))
         if bands:
             dfds = dfd[dfd.split_id == split_id]
             fig.add_trace(go.Scatter(x=dfds['date'], y=dfds['mus_low']/time_scale, name=name, legendgroup=name,
@@ -95,11 +95,13 @@ def main():
     st.write(print_prediction(res))
     st.write(runner.plot_future_splits(split=chosen_split_id, current_time=pct))
 
-    stbands = st.radio("Show bands", ["Yes", "No"], index=1)
-    bands = True if stbands == "Yes" else False
+    
     # Past splits stats
     fig_violin = runner.boxplot(points = "outliers")
     st.write(fig_violin)
+    
+    stbands = st.radio("Show bands", ["Yes", "No"], index=1)
+    bands = True if stbands == "Yes" else False      
     st.write(plot_splits_over_time(runner, 'M', bands=bands, q=.05)) # Split improvement over time # class method deprecated
     #st.write(runner.plot_resets()) # Number of resets
     #st.write(runner.split_analysis('average_run')) # Average run
