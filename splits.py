@@ -110,8 +110,8 @@ class Runner:
             for h in row['histories']:
                 if h['attempt_number'] not in attempt_numbers:
                     attempt_numbers.append(h['attempt_number'])
-                    histories.append({"id":row['id'], "split_id":0, "split_name":"Run start", 'attempt_number':h['attempt_number'], 'split_duration':0})
-                histories.append({"id":row['id'], "split_id":row['segment_number']+1, "split_name":row['name'], 
+                    histories.append({"id":row['id'], "split_id":0, "split_name":"Run start", "split_code": "0 - Run start", 'attempt_number':h['attempt_number'], 'split_duration':0})
+                histories.append({"id":row['id'], "split_id":row['segment_number']+1, "split_name":row['name'], "split_code": f'{row["segment_number"]+1} - {row["name"]}',
                                     'attempt_number':h['attempt_number'], 'split_duration':h['realtime_duration_ms']/1000})
         histories = pd.DataFrame(histories)
         #histories.append(pd.DataFrame({'id':[0], "split_id":[0], "split_name":['Run start'], 'attempt_number':[0], 'split_duration':[0]})) # NEW trying to add 0th split
@@ -119,7 +119,7 @@ class Runner:
         self.attempts = attempts
         attempts.drop(['gametime_duration_ms', 'realtime_duration_ms'], axis=1, inplace=True)
         splits_hist = histories.merge(attempts, on='attempt_number')
-        splits_hist['split_code'] = [f'{row.split_id} - {row.split_name}' for _,row in splits_hist.iterrows()]
+        #splits_hist['split_code'] = [f'{row.split_id} - {row.split_name}' for _,row in splits_hist.iterrows()]
 
         return splits_hist
 
