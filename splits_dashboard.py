@@ -96,7 +96,7 @@ def main():
     # Past splits stats
     fig_violin = runner.boxplot(points = "outliers")
     st.write(fig_violin)
-    st.write(plot_splits_over_time(runner, 'M', q=.01)) # Split improvement over time # class method deprecated
+    st.write(plot_splits_over_time(runner, 'M', q=.05)) # Split improvement over time # class method deprecated
     #st.write(runner.plot_resets()) # Number of resets
     #st.write(runner.split_analysis('average_run')) # Average run
     #split= "Palace Done"
