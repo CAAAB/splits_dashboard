@@ -60,6 +60,7 @@ def main():
         return Runner(runner_name, alpha=alpha, q=.95)
 
     st.title("Splits analysis")
+    st.text("Enter the run duration until the latest split to get an estimated time of completion for the following segments")
     runner_name = st.sidebar.text_input("Runner name", 'marco')
     st.sidebar.write("Runner needs to have uploaded splits to splits.io")
     try:
@@ -95,7 +96,7 @@ def main():
     # Past splits stats
     fig_violin = runner.boxplot(points = "outliers")
     st.write(fig_violin)
-    st.write(plot_splits_over_time(runner, 'M', q=.05)) # Split improvement over time # class method deprecated
+    st.write(plot_splits_over_time(runner, 'M', q=.01)) # Split improvement over time # class method deprecated
     #st.write(runner.plot_resets()) # Number of resets
     #st.write(runner.split_analysis('average_run')) # Average run
     #split= "Palace Done"
