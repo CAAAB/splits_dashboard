@@ -41,6 +41,14 @@ def process_time(split_time):
         split_time = split_time[0]*3600 + split_time[1]*60
     return split_time
 
+def get_game_category(game_id, game_category_id):
+    resp = requests.get(f'https://www.speedrun.com/api/v1/games/{game_id}')
+    game_name = resp.json()['data']['names']['international']
+    resp = requests.get(f'https://www.speedrun.com/api/v1/games/{game_id}/categories')
+    df = pd.DataFrame(resp.json()['data'])
+    game_category_name = df.loc[df['id'] == game_category_id,'name'].values[0]
+    return game_name, game_category_name
+
 class Runner:
     def __init__(self, user, alpha=.05, q=1):
         self.user = user
@@ -49,6 +57,7 @@ class Runner:
         self.splits = self.get_splits()
         self.split_map = self.make_split_map()
         self.speedrun_category = {'game_code':self.game_id, 'game_category':self.game_category_id, "user":self.user}
+        self.game_name, self.game_category_name = get_game_category(self.game_id, self.game_category_id)
         self.clean_s = self.clean_splits()
         #self.tidy_s = self.tidy_splits()
         self.pb_time = self.get_pb()
