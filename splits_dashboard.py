@@ -74,7 +74,7 @@ def plot_expected_run(runner, split="", current_time=""):
     fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_low']-res['hpd_median']/time_scale, line_color='Blue', text=res['text'], hoverinfo='text', mode='lines'))
     fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_high']-res['hpd_median']/time_scale, line_color='Blue', text=res['text'], hoverinfo='text', fill='tonexty', mode='lines'))
     #fig.add_trace(go.Scatter(x=res['display_name'], y=[0]*res.shape[0], line_color='Black', mode="lines"))
-    res0 = res
+    res0 = res.copy()
 
     if split != "" and current_time != "":
         res = []
