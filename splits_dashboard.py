@@ -60,8 +60,8 @@ def plot_splits_over_time(runner, freq, split, bands=False, q=.1):
 
 def plot_expected_run(runner, split="", current_time=""):
     res = []
-    for endsplit in np.arange(0, self.split_map['split_id'].iloc[-1]+1):
-        res.append(self.predict(0, 0, endsplit)) # Issue here, current_time should be time at end of split 0, not 0
+    for endsplit in np.arange(0, runner.split_map['split_id'].iloc[-1]+1):
+        res.append(runner.predict(0, 0, endsplit))
     res = pd.DataFrame(res)
     res['display_name'] = [f'{row.endsplit_id} - {row.endsplit_name}' for _,row in res.iterrows()]
     res['text'] = [f'{row.display_name}<br>High: {nice_time(row.hpd_high)}<br>Median: {nice_time(row.hpd_median)}<br>Low: {nice_time(row.hpd_low)}' for _,row in res.iterrows()]
@@ -73,8 +73,8 @@ def plot_expected_run(runner, split="", current_time=""):
 
     if split != "" and current_time != "":
         res = []
-        for endsplit in np.arange(split, self.split_map['split_id'].iloc[-1]+1):
-            res.append(self.predict(split, current_time, endsplit))
+        for endsplit in np.arange(split, runner.split_map['split_id'].iloc[-1]+1):
+            res.append(runner.predict(split, current_time, endsplit))
         res = pd.DataFrame(res)
         res['display_name'] = [f'{row.endsplit_id} - {row.endsplit_name}' for _,row in res.iterrows()]
         res['text'] = [f'{row.display_name}<br>High: {nice_time(row.hpd_high)}<br>Median: {nice_time(row.hpd_median)}<br>Low: {nice_time(row.hpd_low)}' for _,row in res.iterrows()]
