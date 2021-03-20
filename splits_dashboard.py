@@ -163,13 +163,13 @@ def main():
     # Past splits stats
     st.write(plot_violin(runner, points = "outliers"))
     
-    split_code = st.selectbox('Last split', split_list, index=0)
-    split_id = runner.split_map.loc[runner.split_map.split_code == split_code,"split_id"].values[0]
-    split_name = runner.split_map.loc[runner.split_map.split_code == split_code,"split_name"].values[0]
+    t_split_code = st.selectbox('Split', split_list, index=0)
+    t_split_id = runner.split_map.loc[runner.split_map.split_code == t_split_code,"split_id"].values[0]
+    t_split_name = runner.split_map.loc[runner.split_map.split_code == t_split_code,"split_name"].values[0]
 
     stbands = st.radio("Show bands", ["Yes", "No"], index=1)
     bands = True if stbands == "Yes" else False      
-    st.write(plot_splits_over_time(runner, 'M', split=split_id, bands=bands, q=.05)) # Split improvement over time # class method deprecated
+    st.write(plot_splits_over_time(runner, 'M', split=t_split_id, bands=bands, q=.05)) # Split improvement over time # class method deprecated
     #st.write(runner.plot_resets()) # Number of resets
     #st.write(runner.split_analysis('average_run')) # Average run
     #split= "Palace Done"
