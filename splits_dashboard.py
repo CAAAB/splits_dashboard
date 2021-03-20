@@ -51,7 +51,7 @@ def plot_splits_over_time(runner, freq, bands=False, q=.1):
             fig.add_trace(go.Scatter(x=dfds['date'], y=dfds['mus_high']/time_scale, name = name, legendgroup=name,
                                     fill="tonexty", mode="lines", line_color=split_col, showlegend=bands))
         #fig.add_trace(go.Scatter(x=dfds['date'], y=dfds['mus'], name = name, legendgroup=name,mode="lines"))
-    fig.update_layout(template="plotly_white", yaxis_title="Split duration (min)")
+    fig.update_layout(template="plotly_white", yaxis_title="Split duration (min)", margin=dict(l=40, r=40, b=40, t=40))
     fig.show()
     return fig
 
@@ -63,7 +63,7 @@ def main():
         return Runner(runner_name, alpha=alpha, q=.95)
 
     st.title("Splits analysis")
-    st.text("Enter the run duration until the latest split to get an estimated time of completion for the following segments")
+    st.markdown("Enter the run duration until the latest split to get an estimated time of completion for the following segments")
     runner_name = st.sidebar.text_input("Runner name", 'marco')
     st.sidebar.write("Runner needs to have uploaded splits to splits.io")
     try:
