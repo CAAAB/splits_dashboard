@@ -112,7 +112,7 @@ def plot_violin(runner, points="outliers"):
               scalemode='count') #scale violin plot area with total count
     fig.update_layout(
         title_text="Split times distribution",
-        violingap=0, violingroupgap=0, violinmode='overlay', theme="plotly_white")
+        violingap=0, violingroupgap=0, violinmode='overlay', template="plotly_white")
     fig.show()
     return fig
 
