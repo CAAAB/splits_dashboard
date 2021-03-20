@@ -71,8 +71,8 @@ def plot_expected_run(runner, split="", current_time=""):
     res['text'] = [f'{row.display_name}<br>High: {nice_time(row.hpd_high)}<br>Median: {nice_time(row.hpd_median)}<br>Low: {nice_time(row.hpd_low)}' for _,row in res.iterrows()]
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_low']-res['hpd_median']/time_scale, line_color='Blue', text=res['text'], hoverinfo='text', mode='lines'))
-    fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_high']-res['hpd_median']/time_scale, line_color='Blue', text=res['text'], hoverinfo='text', fill='tonexty', mode='lines'))
+    fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_low']-res['hpd_median'], line_color='Blue', text=res['text'], hoverinfo='text', mode='lines'))
+    fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_high']-res['hpd_median'], line_color='Blue', text=res['text'], hoverinfo='text', fill='tonexty', mode='lines'))
     #fig.add_trace(go.Scatter(x=res['display_name'], y=[0]*res.shape[0], line_color='Black', mode="lines"))
     res0 = res.copy()
 
@@ -83,9 +83,8 @@ def plot_expected_run(runner, split="", current_time=""):
         res = pd.DataFrame(res)
         res['display_name'] = [f'{row.endsplit_id} - {row.endsplit_name}' for _,row in res.iterrows()]
         res['text'] = [f'{row.display_name}<br>High: {nice_time(row.hpd_high)}<br>Median: {nice_time(row.hpd_median)}<br>Low: {nice_time(row.hpd_low)}' for _,row in res.iterrows()]
-# Not matching here
-        fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_low']-res0['hpd_median'], line_color='Gold', text=res['text'], hoverinfo='text', mode='lines'))
-        fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_high']-res0['hpd_median'], line_color='Gold', text=res['text'], hoverinfo='text', fill='tonexty', mode='lines'))
+        fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_low']-res['hpd_median'], line_color='Gold', text=res['text'], hoverinfo='text', mode='lines'))
+        fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_high']-res['hpd_median'], line_color='Gold', text=res['text'], hoverinfo='text', fill='tonexty', mode='lines'))
         #fig.add_trace(go.Scatter(x=res['display_name'], y=[0]*res.shape[0], line_color='Black', mode="lines"))
     fig.update_layout(showlegend=False, template="plotly_white", yaxis_title="Expected time (s)")
     return fig
@@ -157,7 +156,7 @@ def main():
     # Predict next splits
     res=runner.predict(chosen_split_id, pct, chosen_endsplit_id, display = False, verbose=False)
     st.write(print_prediction(res))
-    st.write(runner.plot_future_splits(split=chosen_split_id, current_time=pct))
+    #st.write(runner.plot_future_splits(split=chosen_split_id, current_time=pct))
     st.write(plot_expected_run(runner=runner, split=chosen_split_id, current_time=pct))
 
     
