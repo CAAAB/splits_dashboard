@@ -152,7 +152,7 @@ class Runner:
         #splits_agg = pd.DataFrame([{'count':len([i for i in x if i != 0]), 'average':np.mean([i for i in x if i != 0]), 'stdev':np.std([i for i in x if i != 0])} for x in splits_hist.history]) # Removing 0 (probably skips)
         df = self.splits.loc[(self.splits.split_duration > 0) | (self.splits.split_id == 0),:] # remove zeros except for run start        
         df['started_at'] = df['started_at'].apply(pd.Timestamp)
-        df = df[df['started_at'] > pd.Timestamp.today(tz="UTC") + pd.Timedelta('-90 days')] # Keeping latest runs only
+        df = df.loc[df['started_at'] > pd.Timestamp.today(tz="UTC") + pd.Timedelta('-90 days'),:] # Keeping latest runs only
         filtered = pd.DataFrame(columns=df.columns)
         for segment in df.split_id.unique():
             dfs = df.loc[df['split_id'] == segment,:]
@@ -182,52 +182,6 @@ class Runner:
             split = self.split_map.loc[self.split_map['split_name']==split, 'split_id'].values[0]
         split_name = self.split_map.loc[self.split_map['split_id']==split, 'split_name'].values[0]
         return split, split_name
-
-    def plot_split(self, split):
-        time_scale = 60*60
-        split, split_name = self.get_split(split)
-        # Empirical pdf
-        edf = self.tidy_s['split_duration'][self.tidy_s['split'] == split].values
-        kde = gaussian_kde(edf)
-        x_range = np.linspace(min(edf), max(edf), len(edf))
-        empirical_pdf = pd.DataFrame({'x_range': x_range, 'x_kde': kde(x_range)})
-        
-        
-        if False:
-            mus = self.clean_s.mus
-            sigmasq = self.clean_s.sigmasq
-            average_time = np.sum(mus[split:endsplit])
-            sqrtsumsq = np.sqrt(np.sum([x**2 for x in sigmasq[split:endsplit]]))
-            lam = 5
-            #target_range = np.linspace(average_time*(1-lam), average_time*(1+lam)) # Probably going to cause problems
-        target_range = x_range#np.linspace(average_time-lam*sqrtsumsq, average_time+lam*sqrtsumsq) # Probably going to cause problems
-
-        # Create figure with secondary y-axis
-        fig = make_subplots(specs=[[{"secondary_y": True}]])
-        #fig = go.Figure()
-        fig.add_trace(go.Scatter(x=x_range, y=empirical_pdf['x_kde'], mode='lines',name=f"{split} - {split_name}", fill="tozeroy"))
-
-        if False:
-            # HPD
-            fig.add_shape(type="line",
-                x0=hpd_low/time_scale, y0=0, 
-                x1=hpd_high/time_scale, y1=0,
-                line=dict(color="Black",width=3))
-            
-            if endsplit == self.clean_s.shape[0]-1:
-                # Target vline
-                fig.add_shape(type="line",
-                    x0=target/time_scale, y0=-np.max(y)*.05, 
-                    x1=target/time_scale, y1=np.max(y)*.05,
-                    line=dict(color="Gold",width=3))
-
-        fig.update_layout(xaxis_title="Time (s)", yaxis_title="Density", height=500, template="plotly_white",
-        #legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01)
-            #legend={"orientation":'h'}
-        )
-        fig.show()
-        return fig
-
 
     def predict(self, split, time, endsplit=None, display=False, verbose = False):
         split, split_name = self.get_split(split)        
@@ -368,7 +322,7 @@ class Runner:
         pointpos = [-0.9,-1.1,-0.6,-0.3]
         for split in df_sh.split_id.unique():
             split, split_name = self.get_split(split)
-            ddf = df_sh[df_sh.split_id == split]
+            ddf = df_sh.loc[df_sh.split_id == split,:]
             fig.add_trace(go.Violin(
                 y=np.array(ddf['split_duration'])/time_scale,
                 name=f'{split} - {split_name}',
@@ -403,7 +357,7 @@ class Runner:
         time_scale = 60
         fig = go.Figure()
         for split_id in np.sort(dfd.split_id.unique()):
-            dfds = dfd[dfd.split_id == split_id]
+            dfds = dfd.loc[dfd.split_id == split_id,:]
             split_col = next(pccols)
             name = self.get_split(split_id)
             name = f'{name[0]} - {name[1]}'
