@@ -88,6 +88,34 @@ def plot_expected_run(runner, split="", current_time=""):
     fig.update_layout(showlegend=False, template="plotly_white", yaxis_title="Expected time (s)")
     return fig
 
+@st.cache()
+def plot_violin(runner, points="outliers"):
+    """Points can be all, outliers, suspectedoutliers"""
+    df_sh = runner.splits_filtered
+    time_scale = 60
+    fig = go.Figure()
+    pointpos = [-0.9,-1.1,-0.6,-0.3]
+    for split in df_sh.split_id.unique():
+        split, split_name = runner.get_split(split)
+        ddf = df_sh.loc[df_sh.split_id == split,:]
+        fig.add_trace(go.Violin(
+            y=np.array(ddf['split_duration'])/time_scale,
+            name=f'{split} - {split_name}',
+            pointpos=0
+            #name='kale',
+    #        marker_color='#3D9970'
+        ))
+
+    fig.update_traces(meanline_visible=True,
+              points=points, # show all points
+              jitter=0.5,  # add some jitter on points for better visibility
+              scalemode='count') #scale violin plot area with total count
+    fig.update_layout(
+        title_text="Split times distribution",
+        violingap=0, violingroupgap=0, violinmode='overlay', theme="plotly_white")
+    fig.show()
+    return fig
+
 def main():
             
     @st.cache(suppress_st_warning=True, allow_output_mutation=True)
@@ -132,8 +160,7 @@ def main():
 
     
     # Past splits stats
-    fig_violin = runner.boxplot(points = "outliers")
-    st.write(fig_violin)
+    st.write(plot_violin(runner, points = "outliers"))
     
     stbands = st.radio("Show bands", ["Yes", "No"], index=1)
     bands = True if stbands == "Yes" else False      
