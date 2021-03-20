@@ -66,10 +66,9 @@ def main():
         runner = get_runner(runner_name)
     except:
         st.error("Could not get runner's splits")
-    st.sidebar.write(runner.game_id)
-    st.sidebar.write(runner.game_category_id)
     st.sidebar.write(runner.game_name)
     st.sidebar.write(runner.game_category_name)
+    st.sidebar.markdown(f"![Game cover]({get_game_cover(runner.game_id)})")
     split_list = list(runner.split_map.split_code)
     
     # Last split
