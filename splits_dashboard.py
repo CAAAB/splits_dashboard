@@ -26,7 +26,7 @@ def plot_splits_over_time(runner, freq, split, bands=False, q=.1):
     def high(x):
         return np.quantile(x, 1-q)
     df = runner.splits.loc[runner.splits.split_duration >0,:]
-    df = df.loc[df.splits.split_id == split,:]
+    df = df.loc[df.split_id == split,:]
     df['date'] = pd.to_datetime(df['started_at'])
     
     if bands:
