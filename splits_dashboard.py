@@ -123,6 +123,22 @@ def plot_violin(runner, points="outliers"):
     fig.show()
     return fig
 
+@st.cache()
+def plot_pb_vs_best(runner, diff=False):
+    df = runner.split_map
+    df['text'] = ["Shortest: "+nice_time(x) for x in df.split_shortest_duration]
+    diff = True
+    fig = go.Figure()
+    if diff:
+        ytitle = "PB - Best ever (s) "
+        fig.add_trace(go.Bar(x = df.split_code, y = df.split_pb - df.split_shortest_duration, text = df.text, hoverinfo="text", name="PB - Best", marker_color="#1f77b4"))
+    else:
+        ytitle = "Split best time (min)"
+        fig.add_trace(go.Bar(x = df.split_code, y = df.split_shortest_duration/60, text = df.text, hoverinfo="text", name="Best ever", marker_color="Gold"))
+        fig.add_trace(go.Bar(x = df.split_code, y = df.split_pb/60, text = df.text, hoverinfo="text", name="PB run", marker_color="Green"))
+    fig.update_layout(template="plotly_white", yaxis_title=ytitle)
+    return fig
+
 def main():
             
     @st.cache(suppress_st_warning=True, allow_output_mutation=True)
@@ -177,6 +193,11 @@ def main():
     stbands = st.radio("Show bands", ["Yes", "No"], index=1)
     bands = True if stbands == "Yes" else False      
     st.write(plot_splits_over_time(runner, 'M', split=t_split_id, bands=bands, q=.05)) # Split improvement over time # class method deprecated
+    
+    st.subtitle("PB to best splits comparison")
+    stdiff = st.radio("Show PB and best ever:", ["Side to side", "Difference", index=0])
+    diff = True if stdiff == "Difference" else False
+    st.write(plot_pb_vs_best(runner, diff=diff))
     #st.write(runner.plot_resets()) # Number of resets
     #st.write(runner.split_analysis('average_run')) # Average run
     #split= "Palace Done"
