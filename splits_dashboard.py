@@ -62,6 +62,7 @@ def plot_splits_over_time(runner, freq, split, bands=False, q=.1):
 @st.cache()
 def plot_expected_run(runner, split="", current_time=""):
     time_scale = 60*60
+    time_scale = 1
     res = []
     for endsplit in np.arange(0, runner.split_map['split_id'].iloc[-1]+1):
         res.append(runner.predict(0, 0, endsplit))
@@ -70,9 +71,10 @@ def plot_expected_run(runner, split="", current_time=""):
     res['text'] = [f'{row.display_name}<br>High: {nice_time(row.hpd_high)}<br>Median: {nice_time(row.hpd_median)}<br>Low: {nice_time(row.hpd_low)}' for _,row in res.iterrows()]
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_low']/time_scale, line_color='Blue', text=res['text'], hoverinfo='text', mode='lines'))
-    fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_high']/time_scale, line_color='Blue', text=res['text'], hoverinfo='text', fill='tonexty', mode='lines'))
+    fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_low']-res['hpd_median']/time_scale, line_color='Blue', text=res['text'], hoverinfo='text', mode='lines'))
+    fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_high']-res['hpd_median']/time_scale, line_color='Blue', text=res['text'], hoverinfo='text', fill='tonexty', mode='lines'))
     #fig.add_trace(go.Scatter(x=res['display_name'], y=[0]*res.shape[0], line_color='Black', mode="lines"))
+    res0 = res
 
     if split != "" and current_time != "":
         res = []
@@ -82,8 +84,8 @@ def plot_expected_run(runner, split="", current_time=""):
         res['display_name'] = [f'{row.endsplit_id} - {row.endsplit_name}' for _,row in res.iterrows()]
         res['text'] = [f'{row.display_name}<br>High: {nice_time(row.hpd_high)}<br>Median: {nice_time(row.hpd_median)}<br>Low: {nice_time(row.hpd_low)}' for _,row in res.iterrows()]
 
-        fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_low']/time_scale, line_color='Gold', text=res['text'], hoverinfo='text', mode='lines'))
-        fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_high']/time_scale, line_color='Gold', text=res['text'], hoverinfo='text', fill='tonexty', mode='lines'))
+        fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_low']-res0['hpd_median']/time_scale, line_color='Gold', text=res['text'], hoverinfo='text', mode='lines'))
+        fig.add_trace(go.Scatter(x=res['display_name'], y=res['hpd_high']-res0['hpd_median']/time_scale, line_color='Gold', text=res['text'], hoverinfo='text', fill='tonexty', mode='lines'))
         #fig.add_trace(go.Scatter(x=res['display_name'], y=[0]*res.shape[0], line_color='Black', mode="lines"))
     fig.update_layout(showlegend=False, template="plotly_white", yaxis_title="Expected time (s)")
     return fig
