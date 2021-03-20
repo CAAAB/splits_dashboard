@@ -195,7 +195,7 @@ def main():
     st.write(plot_splits_over_time(runner, 'M', split=t_split_id, bands=bands, q=.05)) # Split improvement over time # class method deprecated
     
     st.subtitle("PB to best splits comparison")
-    stdiff = st.radio("Show PB and best ever:", ["Side to side", "Difference", index=0])
+    stdiff = st.radio("Show PB and best ever:", ["Side to side", "Difference"], index=0)
     diff = True if stdiff == "Difference" else False
     st.write(plot_pb_vs_best(runner, diff=diff))
     #st.write(runner.plot_resets()) # Number of resets
