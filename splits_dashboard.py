@@ -19,13 +19,14 @@ def print_prediction(res):
 def proba_pb(runner, split_id, current_time):
     return runner.predict(split_id, current_time)['p_pb']
 
-def plot_splits_over_time(runner, freq, bands=False, q=.1):
+def plot_splits_over_time(runner, freq, split, bands=False, q=.1):
     """e.g. freq can be M or W-MON"""
     def low(x):
         return np.quantile(x, q)
     def high(x):
         return np.quantile(x, 1-q)
     df = runner.splits.loc[runner.splits.split_duration >0,:]
+    df = df.loc[df.splits.split_id == split,:]
     df['date'] = pd.to_datetime(df['started_at'])
     
     if bands:
@@ -103,7 +104,7 @@ def main():
     
     stbands = st.radio("Show bands", ["Yes", "No"], index=1)
     bands = True if stbands == "Yes" else False      
-    st.write(plot_splits_over_time(runner, 'M', bands=bands, q=.05)) # Split improvement over time # class method deprecated
+    st.write(plot_splits_over_time(runner, 'M', split=chosen_split_id, bands=bands, q=.05)) # Split improvement over time # class method deprecated
     #st.write(runner.plot_resets()) # Number of resets
     #st.write(runner.split_analysis('average_run')) # Average run
     #split= "Palace Done"
