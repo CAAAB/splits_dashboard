@@ -28,7 +28,7 @@ def plot_splits_over_time(runner, freq, split, bands=False, q=.1):
     df = runner.splits.loc[runner.splits.split_duration >0,:]
     df = df.loc[df.split_id == split,:]
     df['date'] = pd.to_datetime(df['started_at'])
-    df['text'] = [f'{row.display_name}<br>{row.date}<br>{nice_time(row.split_duration)}' for _,row in df.iterrows()]
+    df['text'] = [f'{row.split_code}<br>{row.date}<br>{nice_time(row.split_duration)}' for _,row in df.iterrows()]
     
     if bands:
         dfd = df.groupby(['split_id', pd.Grouper(key='date', freq=freq)])['split_duration'].agg(mus=np.median).reset_index().sort_values('date')
