@@ -49,6 +49,11 @@ def get_game_category(game_id, game_category_id):
     game_category_name = df.loc[df['id'] == game_category_id,'name'].values[0]
     return game_name, game_category_name
 
+def get_game_cover(game_id):
+    resp = requests.get(f'https://www.speedrun.com/api/v1/games/{game_id}')
+    game_cover_url = resp.json()['data']['assets']['cover-large']['uri']
+    return game_cover_url
+
 class Runner:
     def __init__(self, user, alpha=.05, q=1):
         self.user = user
