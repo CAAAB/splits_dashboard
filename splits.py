@@ -73,6 +73,9 @@ class Runner:
     def make_split_map(self):
         df = self.splits[['split_id', 'split_name']].groupby(['split_id', 'split_name']).count().reset_index()
         df['split_code'] = [f'{row.split_id} - {row.split_name}' for _, row in df.iterrows()]
+        df['split_shortest_duration'] = self.splits.groupby('split_id')["split_shortest_duration"].agg(min).reset_index()['split_shortest_duration']
+        df['split_pb'] = self.splits.groupby('split_id')["split_pb"].agg(min).reset_index()['split_pb']
+
         return df.sort_values('split_id')
 
     def get_pb(self):
@@ -104,15 +107,16 @@ class Runner:
         self.sob_time = res_splits.json()['run']['realtime_sum_of_best_ms']/1000
 
         all_splits = pd.DataFrame(res_splits.json()['run']['segments'])#[0]['histories'])
+        self.test = all_splits
         attempt_numbers = []
         histories = []
         for i, row in all_splits.iterrows():
             for h in row['histories']:
                 if h['attempt_number'] not in attempt_numbers:
                     attempt_numbers.append(h['attempt_number'])
-                    histories.append({"id":row['id'], "split_id":0, "split_name":"Run start", "split_code": "0 - Run start", 'attempt_number':h['attempt_number'], 'split_duration':0})
+                    histories.append({"id":row['id'], "split_id":0, "split_name":"Run start", "split_code": "0 - Run start", 'attempt_number':h['attempt_number'], 'split_duration':0, 'split_pb':0,'split_shortest_duration':0})
                 histories.append({"id":row['id'], "split_id":row['segment_number']+1, "split_name":row['name'], "split_code": f'{row["segment_number"]+1} - {row["name"]}',
-                                    'attempt_number':h['attempt_number'], 'split_duration':h['realtime_duration_ms']/1000})
+                                    'attempt_number':h['attempt_number'], 'split_duration':h['realtime_duration_ms']/1000, 'split_pb':row['realtime_duration_ms']/1000, 'split_shortest_duration':row['realtime_shortest_duration_ms']/1000})
         histories = pd.DataFrame(histories)
         #histories.append(pd.DataFrame({'id':[0], "split_id":[0], "split_name":['Run start'], 'attempt_number':[0], 'split_duration':[0]})) # NEW trying to add 0th split
         attempts = pd.DataFrame(res_splits.json()['run']['histories'])
@@ -120,7 +124,7 @@ class Runner:
         attempts.drop(['gametime_duration_ms', 'realtime_duration_ms'], axis=1, inplace=True)
         splits_hist = histories.merge(attempts, on='attempt_number')
         #splits_hist['split_code'] = [f'{row.split_id} - {row.split_name}' for _,row in splits_hist.iterrows()]
-
+        #splits_hist['split_best'] = splits_hist.loc[splits_hist['split_duration']>0,:].groupby("split_id")['split_duration'].agg(min).reset_index()['split_duration']
         return splits_hist
 
     def clean_splits(self):
@@ -411,4 +415,3 @@ class Runner:
             #fig.add_trace(go.Scatter(x=res['display_name'], y=[0]*res.shape[0], line_color='Black', mode="lines"))
         fig.update_layout(showlegend=False, template="plotly_white", yaxis_title="Likely seconds range")
         return fig
-
