@@ -117,7 +117,8 @@ def plot_violin(runner, points="outliers"):
               jitter=0.5,  # add some jitter on points for better visibility
               scalemode='count') #scale violin plot area with total count
     fig.update_layout(
-        title_text="Split times distribution",
+        title_text="Historical distribution of each split's duration",
+        yaxis_title="Split duration (min)",
         violingap=0, violingroupgap=0, violinmode='overlay', template="plotly_white")
     fig.show()
     return fig
