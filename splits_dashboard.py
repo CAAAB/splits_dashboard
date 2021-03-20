@@ -27,7 +27,8 @@ def plot_splits_over_time(runner, freq, split, bands=False, q=.1):
     def high(x):
         return np.quantile(x, 1-q)
     df = runner.splits.loc[runner.splits.split_duration >0,:]
-    df = df.loc[df.split_id == split,:]
+    if split != "":
+        df = df.loc[df.split_id == split,:]
     df['date'] = pd.to_datetime(df['started_at'])
     df['text'] = [f'{row.split_code}<br>{row.date}<br>{nice_time(row.split_duration)}' for _,row in df.iterrows()]
     
@@ -39,7 +40,7 @@ def plot_splits_over_time(runner, freq, split, bands=False, q=.1):
 
     time_scale = 60
     fig = go.Figure()
-    for split_id in runner.split_map.split_id:
+    for split_id in np.unique(df.split_id):
         dfm = df.loc[df.split_id == split_id,:]
         split_col = next(pccols)
         name = runner.get_split(split_id)
