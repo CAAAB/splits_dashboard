@@ -49,7 +49,6 @@ def plot_splits_over_time(runner, freq, split, bands=False, q=.1):
         split_col = next(pccols)
         split_name = runner.get_split(split_id)
         name = f'{split_name[0]} - {split_name[1]}'
-        sl1 = not bands
         fig.add_trace(go.Scatter(x=dfm['started_at'], y=dfm['split_duration']/time_scale, text=dfm['text'], hoverinfo='text', mode='markers', marker_size=3, name=name,marker_color=split_col, legendgroup=name, showlegend=legend1))
         if bands:
             dfds = dfd[dfd.split_id == split_id]
@@ -194,7 +193,7 @@ def main():
     bands = True if stbands == "Yes" else False      
     st.write(plot_splits_over_time(runner, 'M', split=t_split_id, bands=bands, q=.05)) # Split improvement over time # class method deprecated
     
-    st.subtitle("PB to best splits comparison")
+    st.subheader("PB to best splits comparison")
     stdiff = st.radio("Show PB and best ever:", ["Side to side", "Difference"], index=0)
     diff = True if stdiff == "Difference" else False
     st.write(plot_pb_vs_best(runner, diff=diff))
