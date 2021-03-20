@@ -52,7 +52,7 @@ def plot_splits_over_time(runner, freq, bands=False, q=.1):
                                     fill="tonexty", mode="lines", line_color=split_col, showlegend=bands))
         #fig.add_trace(go.Scatter(x=dfds['date'], y=dfds['mus'], name = name, legendgroup=name,mode="lines"))
     fig.update_layout(template="plotly_white", yaxis_title="Split duration (min)", width=900, height=600)
-    fig.update_xaxes(rangeslider_visible=True)
+    fig.update_xaxes(rangeslider_visible=False)
     fig.show()
     return fig
 
