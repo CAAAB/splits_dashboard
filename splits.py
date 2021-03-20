@@ -119,6 +119,8 @@ class Runner:
         self.attempts = attempts
         attempts.drop(['gametime_duration_ms', 'realtime_duration_ms'], axis=1, inplace=True)
         splits_hist = histories.merge(attempts, on='attempt_number')
+        splits_hist['split_code'] = [f'{row.split_id} - {row.split_name}' for _,row in splits_hist.iterrows()]
+
         return splits_hist
 
     def clean_splits(self):
