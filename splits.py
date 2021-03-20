@@ -134,21 +134,23 @@ class Runner:
                 return np.std(threshed)
 
         #splits_agg = pd.DataFrame([{'count':len([i for i in x if i != 0]), 'average':np.mean([i for i in x if i != 0]), 'stdev':np.std([i for i in x if i != 0])} for x in splits_hist.history]) # Removing 0 (probably skips)
-        df = self.splits[self.splits.split_duration > 0] # remove zeros
+        df = self.splits.loc[(self.splits.split_duration > 0) | (self.splits.split_id == 0),:] # remove zeros except for run start        
         df['started_at'] = df['started_at'].apply(pd.Timestamp)
         df = df[df['started_at'] > pd.Timestamp.today(tz="UTC") + pd.Timedelta('-90 days')] # Keeping latest runs only
         filtered = pd.DataFrame(columns=df.columns)
         for segment in df.split_id.unique():
-            dfs = df[df['split_id'] == segment]
+            dfs = df.loc[df['split_id'] == segment,:]
             hold = np.quantile(dfs['split_duration'], self.q)
-            filtered = filtered.append(dfs[dfs['split_duration'] <= hold])
+            filtered = filtered.append(dfs.loc[dfs['split_duration'] <= hold,:])
+        filtered.append(df.loc[df.split_id == 0,:]) # trying to bring back split 0
         self.splits_filtered = filtered.sort_values('split_id')
         #df = df.groupby('split_id').agg({'split_duration':[thresh_mean, thresh_std]})
         df = filtered.groupby('split_id').agg({'split_duration':[thresh_mean, thresh_std]})
         df.columns = df.columns.droplevel(0)
         df.reset_index(inplace=True)
         df.rename(columns={'thresh_mean':'mus', 'thresh_std':'sigmasq'}, inplace = True)   
-
+        df.loc[df["split_id"] == 0, ["mus"]] = 0
+        df.loc[df["split_id"] == 0, ["sigmasq"]] = 0
         #empirical_splits = empirical_splits.merge(df, on='split_id')   
         empirical_splits = df
         empirical_splits['game_id'] = self.game_id
