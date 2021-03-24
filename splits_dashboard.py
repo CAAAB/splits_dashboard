@@ -184,7 +184,7 @@ def main():
     # Past splits stats
     st.write(plot_violin(runner, points = "outliers"))
     
-    t_split_code = st.selectbox('Split', split_list, index=0)
+    t_split_code = st.selectbox('Split', split_list, index=1)
     t_split_id = runner.split_map.loc[runner.split_map.split_code == t_split_code,"split_id"].values[0]
     t_split_name = runner.split_map.loc[runner.split_map.split_code == t_split_code,"split_name"].values[0]
 
