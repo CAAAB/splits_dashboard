@@ -61,6 +61,7 @@ class Runner:
         self.q = q
         self.splits = self.get_splits()
         self.split_map = self.make_split_map()
+        self.splits = self.add_resets()
         self.speedrun_category = {'game_code':self.game_id, 'game_category':self.game_category_id, "user":self.user}
         self.game_name, self.game_category_name = get_game_category(self.game_id, self.game_category_id)
         self.clean_s = self.clean_splits()
@@ -75,8 +76,26 @@ class Runner:
         df['split_code'] = [f'{row.split_id} - {row.split_name}' for _, row in df.iterrows()]
         df['split_shortest_duration'] = self.splits.groupby('split_id')["split_shortest_duration"].agg(min).reset_index()['split_shortest_duration']
         df['split_pb'] = self.splits.groupby('split_id')["split_pb"].agg(min).reset_index()['split_pb']
-
+        last_splits = self.splits.sort_values(["attempt_number",'split_id']).groupby('attempt_number')["split_id"].agg("last").reset_index()
+        self.attempts = self.attempts.merge(last_splits.rename(columns={'split_id':'last_split_id'}), on='attempt_number')
+        split_resets = last_splits.groupby('split_id').agg('count').reset_index().rename(columns={'attempt_number':'resets'})
+        split_resets.loc[split_resets.split_id == np.max(split_resets.split_id),"resets"] = 0
+        #split_resets.loc[split_resets.split_id == 0,"resets"] = 0
+        df = df.merge(split_resets, on='split_id', how='left')
+        df['resets'] = df['resets'].fillna(0)
+        attempts_num = self.splits.groupby('split_id')['attempt_number'].agg('count').reset_index()
+        df = df.merge(attempts_num, on='split_id', how="left")
+        df['reset_rate'] = df['resets']/df['attempt_number']
+        df['p_no_reset_up_to_split'] = np.cumprod([1-x for x in df.reset_rate])
+        df['p_no_reset_till_end'] = [np.prod(1-df.reset_rate[i:-1]) for i in range(df.shape[0])]
         return df.sort_values('split_id')
+
+    def add_resets(self):
+        last_split = self.attempts[['attempt_number', 'last_split_id']].loc[self.attempts.last_split_id != np.max(self.split_map.split_id),:]
+        last_split['reset'] = 1
+        res = self.splits.merge(last_split, how='left', left_on=['attempt_number', 'split_id'], right_on=['attempt_number', 'last_split_id']).drop('last_split_id', axis=1)
+        res['reset'] = res['reset'].fillna(0)
+        return res
 
     def get_pb(self):
         api_pb = f'https://www.speedrun.com/api/v1/users/{self.speedrun_category["user"]}/personal-bests'
@@ -123,6 +142,7 @@ class Runner:
         self.attempts = attempts
         attempts.drop(['gametime_duration_ms', 'realtime_duration_ms'], axis=1, inplace=True)
         splits_hist = histories.merge(attempts, on='attempt_number')
+
         #splits_hist['split_code'] = [f'{row.split_id} - {row.split_name}' for _,row in splits_hist.iterrows()]
         #splits_hist['split_best'] = splits_hist.loc[splits_hist['split_duration']>0,:].groupby("split_id")['split_duration'].agg(min).reset_index()['split_duration']
         return splits_hist
