@@ -55,8 +55,9 @@ def get_game_cover(game_id):
     return game_cover_url
 
 class Runner:
-    def __init__(self, user, alpha=.05, q=1):
+    def __init__(self, user, force_splits = False, alpha=.05, q=1):
         self.user = user
+        self.force_splits = force_splits
         self.alpha = alpha
         self.q = q
         self.splits = self.get_splits()
@@ -114,15 +115,19 @@ class Runner:
         if response.status_code != 200:
             print(response.json()['message'])
             raise Exception('Problem with user')
-        try:
-            api_splits = response.json()['data'][0]['run']['splits']['uri'] # May need to change number of list item e.g. Kfjs: 2
-            print(api_splits)
-        except:
-            print('No split data')
-            raise
+        if self.force_splits != 0:
+            api_splits = f"https://splits.io/api/v4/runs/{self.force_splits}"
+        else:
+            try:
+                api_splits = response.json()['data'][0]['run']['splits']['uri'] # May need to change number of list item e.g. Kfjs: 2
+                api_splits = api_splits.replace("v3", "v4")
+                print(api_splits)
+            except:
+                print('No split data')
+                raise
         self.game_id = response.json()['data'][0]['run']['game']
         self.game_category_id = response.json()['data'][0]['run']['category']
-        res_splits = requests.get(api_splits.replace("v3", "v4"), params={'historic':1}) # barbaric way to switch to API v4
+        res_splits = requests.get(api_splits, params={'historic':1}) # barbaric way to switch to API v4
         self.sob_time = res_splits.json()['run']['realtime_sum_of_best_ms']/1000
 
         all_splits = pd.DataFrame(res_splits.json()['run']['segments'])#[0]['histories'])
@@ -133,9 +138,11 @@ class Runner:
             for h in row['histories']:
                 if h['attempt_number'] not in attempt_numbers:
                     attempt_numbers.append(h['attempt_number'])
-                    histories.append({"id":row['id'], "split_id":0, "split_name":"Run start", "split_code": "0 - Run start", 'attempt_number':h['attempt_number'], 'split_duration':0, 'split_pb':0,'split_shortest_duration':0})
+                    histories.append({"id":row['id'], "split_id":0, "split_name":"Run start", "split_code": "0 - Run start", 
+                                      'attempt_number':h['attempt_number'], 'split_duration':0, 'split_pb':0, "split_end_time":0, "split_is_gold":False, "split_skipped":False,'split_shortest_duration':0})
                 histories.append({"id":row['id'], "split_id":row['segment_number']+1, "split_name":row['name'], "split_code": f'{row["segment_number"]+1} - {row["name"]}',
-                                    'attempt_number':h['attempt_number'], 'split_duration':h['realtime_duration_ms']/1000, 'split_pb':row['realtime_duration_ms']/1000, 'split_shortest_duration':row['realtime_shortest_duration_ms']/1000})
+                                    'attempt_number':h['attempt_number'], 'split_duration':h['realtime_duration_ms']/1000, 
+                                  'split_pb':row['realtime_duration_ms']/1000, "split_end_time":row['realtime_end_ms']/1000, "split_is_gold":row["realtime_gold"], "split_skipped":row['realtime_skipped'], 'split_shortest_duration':row['realtime_shortest_duration_ms']/1000})
         histories = pd.DataFrame(histories)
         #histories.append(pd.DataFrame({'id':[0], "split_id":[0], "split_name":['Run start'], 'attempt_number':[0], 'split_duration':[0]})) # NEW trying to add 0th split
         attempts = pd.DataFrame(res_splits.json()['run']['histories'])
