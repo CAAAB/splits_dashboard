@@ -38,7 +38,7 @@ def process_time(split_time):
     if len(split_time) == 3:
         split_time = split_time[0]*3600 + split_time[1]*60 + split_time[2]
     elif len(split_time) == 2:
-        split_time = split_time[0]*3600 + split_time[1]*60
+        split_time = split_time[0]*60 + split_time[1]
     return split_time
 
 def get_game_category(game_id, game_category_id):
