@@ -140,14 +140,15 @@ def plot_pb_vs_best(runner, diff=False):
 def main():
             
     @st.cache(suppress_st_warning=True, allow_output_mutation=True)
-    def get_runner(runner_name):
-        return Runner(runner_name, alpha=alpha, q=.95)
+    def get_runner(runner_name, force_splits):
+        return Runner(runner_name, force_splits=force_splits,alpha=alpha, q=.95)
 
     # Sidebar
     runner_name = st.sidebar.text_input("Runner name", 'marco')
     st.sidebar.write("Runner needs to have uploaded splits to splits.io")
+    force_splits = "7g31"
     try:
-        runner = get_runner(runner_name)
+        runner = get_runner(runner_name, force_splits)
     except:
         st.error("Could not get runner's splits")
     st.sidebar.write(f"Last uploaded run: {runner.splits.started_at.max()}")
