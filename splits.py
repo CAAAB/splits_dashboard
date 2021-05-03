@@ -128,6 +128,9 @@ class Runner:
         #self.game_id = response.json()['data'][0]['run']['game']
         #self.game_category_id = response.json()['data'][0]['run']['category']
         res_splits = requests.get(api_splits, params={'historic':1}) # barbaric way to switch to API v4
+        split_runner = res_splits.json()['run']['runners'][0]['name']
+        if self.user.lower() != split_runner.lower():
+            self.__init__(split_runner, self.force_splits, self.alpha, self.q)
         self.game_id = res_splits.json()['run']['game']['srdc_id']
         self.game_category_id = res_splits.json()['run']['category']['srdc_id']
         self.sob_time = res_splits.json()['run']['realtime_sum_of_best_ms']/1000
