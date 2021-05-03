@@ -120,14 +120,16 @@ class Runner:
         else:
             try:
                 api_splits = response.json()['data'][0]['run']['splits']['uri'] # May need to change number of list item e.g. Kfjs: 2
-                api_splits = api_splits.replace("v3", "v4")
+                api_splits = api_splits.replace("/v3/", "/v4/")
                 print(api_splits)
             except:
                 print('No split data')
                 raise
-        self.game_id = response.json()['data'][0]['run']['game']
-        self.game_category_id = response.json()['data'][0]['run']['category']
+        #self.game_id = response.json()['data'][0]['run']['game']
+        #self.game_category_id = response.json()['data'][0]['run']['category']
         res_splits = requests.get(api_splits, params={'historic':1}) # barbaric way to switch to API v4
+        self.game_id = res_splits.json()['run']['game']['srdc_id']
+        self.game_category_id = res_splits.json()['run']['category']['srdc_id']
         self.sob_time = res_splits.json()['run']['realtime_sum_of_best_ms']/1000
 
         all_splits = pd.DataFrame(res_splits.json()['run']['segments'])#[0]['histories'])
