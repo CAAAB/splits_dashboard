@@ -148,6 +148,8 @@ class Runner:
         histories = pd.DataFrame(histories)
         #histories.append(pd.DataFrame({'id':[0], "split_id":[0], "split_name":['Run start'], 'attempt_number':[0], 'split_duration':[0]})) # NEW trying to add 0th split
         attempts = pd.DataFrame(res_splits.json()['run']['histories'])
+        attempts['started_at'] = pd.to_datetime(attempts['started_at'])
+        attempts['ended_at'] = pd.to_datetime(attempts['ended_at'])
         self.attempts = attempts
         attempts.drop(['gametime_duration_ms', 'realtime_duration_ms'], axis=1, inplace=True)
         splits_hist = histories.merge(attempts, on='attempt_number')
