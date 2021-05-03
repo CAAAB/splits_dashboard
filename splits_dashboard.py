@@ -19,6 +19,19 @@ def print_prediction(res):
 def proba_pb(runner, split_id, current_time):
     return runner.predict(split_id, current_time)['p_pb']
 
+def find_runner_runs(runner):
+    resp = requests.get(f'https://splits.io/api/v4/runners/{runner}/runs')
+    temp=pd.DataFrame(resp.json()['runs'])
+    temp['game_name'] = [x['name'] for x in temp['game']]
+    temp['category_name'] = [x['name'] for x in temp['category']]
+    temp['game_cat'] = temp['game_name'] + ' - ' + temp['category_name']
+    #print(temp['game_cat'].unique())
+    last_runs = temp.groupby('game_cat').last().reset_index()
+    return last_runs
+
+def get_run_id(last_runs, game_cat):
+    return last_runs.loc[last_runs.game_cat==game_cat,"id"].values[0]
+
 @st.cache()
 def plot_splits_over_time(runner, freq, split, bands=False, q=.1):
     """e.g. freq can be M or W-MON"""
@@ -144,9 +157,12 @@ def main():
         return Runner(runner_name, force_splits=force_splits,alpha=alpha, q=.95)
 
     # Sidebar
-    runner_name = st.sidebar.text_input("Runner name", 'marco')
     st.sidebar.write("Runner needs to have uploaded splits to splits.io")
-    force_splits = "7g31"
+    runner_name = st.sidebar.text_input("Runner name", 'marco')
+    last_runs = find_runner_runs(runner_name)
+    game_cat = st.sidebar.selectbox("Category", np.sort(last_runs.game_cat.unique()), index=0)
+    force_splits = get_run_id(last_runs, game_cat)
+    #force_splits = "7g31"
     try:
         runner = get_runner(runner_name, force_splits)
     except:
