@@ -10,7 +10,7 @@ hide_streamlit_style = """
             footer {visibility: hidden;}
             </style>
             """
-#st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
+st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
 
 alpha = .05
 def print_prediction(res):
@@ -162,7 +162,7 @@ def main():
     last_runs = find_runner_runs(runner_name)
     game_cat = st.sidebar.selectbox("Category", np.sort(last_runs.game_cat.unique()), index=0)
     force_splits = get_run_id(last_runs, game_cat)
-    st.sidebar.text_input("Run id", force_splits)
+    force_splits = st.sidebar.text_input("Run id", force_splits)
     #force_splits = "7g31"
     try:
         runner = get_runner(runner_name, force_splits)
