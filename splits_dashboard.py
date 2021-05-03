@@ -26,7 +26,7 @@ def find_runner_runs(runner):
     temp['category_name'] = [x['name'] for x in temp['category']]
     temp['game_cat'] = temp['game_name'] + ' - ' + temp['category_name']
     #print(temp['game_cat'].unique())
-    last_runs = temp.sort_values(['game_cat', "created_at"]).groupby('game_cat').last()
+    last_runs = temp.sort_values(['game_cat', "created_at"]).groupby('game_cat').last().reset_index()
     return last_runs
 
 def get_run_id(last_runs, game_cat):
