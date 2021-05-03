@@ -10,7 +10,7 @@ hide_streamlit_style = """
             footer {visibility: hidden;}
             </style>
             """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
+#st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
 
 alpha = .05
 def print_prediction(res):
