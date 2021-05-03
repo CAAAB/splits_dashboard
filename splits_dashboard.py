@@ -158,10 +158,11 @@ def main():
 
     # Sidebar
     st.sidebar.write("Runner needs to have uploaded splits to splits.io")
-    runner_name = st.sidebar.text_input("Runner name", 'marco')
+    runner_name = st.sidebar.text_input("Runner name", 'demon')
     last_runs = find_runner_runs(runner_name)
     game_cat = st.sidebar.selectbox("Category", np.sort(last_runs.game_cat.unique()), index=0)
     force_splits = get_run_id(last_runs, game_cat)
+    st.sidebar.text_input("Run id", force_splits)
     #force_splits = "7g31"
     try:
         runner = get_runner(runner_name, force_splits)
