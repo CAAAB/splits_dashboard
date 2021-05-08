@@ -156,7 +156,7 @@ class Runner:
         self.attempts = attempts
         attempts.drop(['gametime_duration_ms', 'realtime_duration_ms'], axis=1, inplace=True)
         splits_hist = histories.merge(attempts, on='attempt_number')
-
+        splits_hist['split_end_time'] = [x.total_seconds() for x in splits_hist.ended_at - splits_hist.started_at]
         #splits_hist['split_code'] = [f'{row.split_id} - {row.split_name}' for _,row in splits_hist.iterrows()]
         #splits_hist['split_best'] = splits_hist.loc[splits_hist['split_duration']>0,:].groupby("split_id")['split_duration'].agg(min).reset_index()['split_duration']
         return splits_hist
